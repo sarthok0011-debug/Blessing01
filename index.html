@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Web Access</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; color: #0f0; 
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden; display: flex; 
+            justify-content: center; align-items: center;
+            user-select: none;
+        }
+
+        #binary-bg {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            font-size: 1.2rem; line-height: 1;
+            word-wrap: break-word;
+            opacity: 0.3; z-index: 1;
+            overflow: hidden; pointer-events: none;
+        }
+
+        #center-content {
+            z-index: 10; text-align: center;
+            cursor: pointer; transition: 0.3s;
+        }
+
+        .init-text {
+            font-size: 2rem; font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .finger-container {
+            display: none; flex-direction: column;
+            color: red; text-shadow: 0 0 20px red, 0 0 40px darkred;
+        }
+
+        /* Added a class for the new emoji state */
+        .emoji-state {
+            color: #ffcc00 !important; 
+            text-shadow: 0 0 20px #ffcc00, 0 0 40px #ff9900 !important;
+        }
+
+        .finger-emoji {
+            font-size: 15rem; margin: 0; line-height: 1;
+            animation: glitch 0.1s infinite;
+        }
+
+        .hacked-text {
+            font-size: 3rem; font-weight: bold; margin-top: 10px;
+            letter-spacing: 5px; animation: glitch 0.2s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(3px, -3px) skewX(2deg); }
+            25% { transform: translate(-3px, 3px) skewX(-2deg); }
+            50% { transform: translate(3px, 3px) skewX(0deg); }
+            75% { transform: translate(-3px, -3px) skewX(2deg); }
+            100% { transform: translate(0, 0) skewX(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="binary-bg"></div>
+
+    <div id="center-content">
+        <div id="initText" class="init-text">
+            [ SYSTEM ENCRYPTED ]<br>
+            > CLICK TO DECRYPT <
+        </div>
+        
+        <div id="hackedState" class="finger-container">
+            <div id="mainEmoji" class="finger-emoji">🖕</div>
+            <div id="mainText" class="hacked-text">SYSTEM HACKED</div>
+        </div>
+    </div>
+
+    <!-- Free Evil Laugh Audio -->
+    <audio id="evilLaugh" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/277/277-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const binaryBg = document.getElementById('binary-bg');
+        const centerContent = document.getElementById('center-content');
+        const initText = document.getElementById('initText');
+        const hackedState = document.getElementById('hackedState');
+        const mainEmoji = document.getElementById('mainEmoji');
+        const mainText = document.getElementById('mainText');
+        const audio = document.getElementById('evilLaugh');
+        
+        let isHacked = false;
+        let backAttempts = 0;
+
+        function generateBinary() {
+            let binaryString = '';
+            const totalChars = (window.innerWidth * window.innerHeight) / 50; 
+            for(let i = 0; i < totalChars; i++) {
+                binaryString += Math.round(Math.random()) ? '1 ' : '0 ';
+            }
+            binaryBg.innerText = binaryString;
+        }
+
+        document.body.addEventListener('click', () => {
+            if (isHacked) return;
+            isHacked = true;
+
+            // Play Laugh
+            audio.volume = 1.0; 
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log(e));
+
+            // Show Finger
+            initText.style.display = 'none';
+            hackedState.style.display = 'flex';
+            document.body.style.backgroundColor = "#110000";
+
+            // Start Binary
+            generateBinary();
+            setInterval(generateBinary, 100);
+            
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+
+            // THE TRAP: Push 4 fake entries into the browser history
+            for (let i = 0; i < 4; i++) {
+                history.pushState({ trapped: true }, "", location.href);
+            }
+        });
+
+        // Detect Back Button Press
+        window.addEventListener('popstate', (event) => {
+            if (isHacked) {
+                backAttempts++;
+                let attemptsLeft = 4 - backAttempts;
+
+                if (attemptsLeft > 0) {
+                    // Change to teasing emoji when they try to escape
+                    mainEmoji.innerText = '😜';
+                    mainEmoji.classList.add('emoji-state');
+                    mainText.innerText = `NICE TRY! (${attemptsLeft} LEFT)`;
+                    mainText.style.color = "#ffcc00"; // Make text yellow like the emoji
+                } else {
+                    // Finally let them out
+                    mainEmoji.innerText = '💀';
+                    mainText.innerText = "BYE BYE!";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
